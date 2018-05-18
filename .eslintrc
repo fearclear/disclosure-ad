@@ -1,0 +1,13 @@
+{
+  "extends": "eslint-config-umi",
+  "rules": {
+    "semi": ["error", "never"],
+    "no-script-url": "off",
+    "keyword-spacing": ["error", { "overrides": {
+      "if": { "after": false },
+      "for": { "after": false },
+      "while": { "after": false },
+      "else": { "before": true }
+    } }]
+  }
+}
