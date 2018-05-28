@@ -1,24 +1,34 @@
 
+import { config } from '../utils'// eslint-disable-line
+
 export default {
 
   namespace: 'dcad',
 
-  state: {},
+  state: {
+    formLayout: {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 16 }
+    },
+    menuIndex: 'product'
+  },
 
   subscriptions: {
-    setup({ dispatch, history }) {  // eslint-disable-line
-    },
+
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
-      yield put({ type: 'save' })
-    },
+    *changeMenuIndex({ payload }, { put, call }) {
+      yield put({ type: 'menuIndex', payload })
+    }
   },
 
   reducers: {
-    save(state, action) {
-      return { ...state, ...action.payload }
+    menuIndex(state, { payload }) {
+      return {
+        ...state,
+        menuIndex: payload
+      }
     },
   },
 

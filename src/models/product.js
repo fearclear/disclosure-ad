@@ -1,25 +1,30 @@
+import { product } from '../services'
 
 export default {
 
   namespace: 'product',
 
-  state: {},
+  state: {
+    productList: []
+  },
 
   subscriptions: {
-    setup({ dispatch, history }) {  // eslint-disable-line
-    },
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
-      yield put({ type: 'save' })
-    },
+    *getProductList({dispatch}, {put, call}) {
+      let list = yield call(product.getProductList)
+      yield put({ type: 'productList', payload: list })
+    }
   },
 
   reducers: {
-    save(state, action) {
-      return { ...state, ...action.payload }
-    },
+    productList(state, { payload }) {
+      return {
+        ...state,
+        productList: payload.listData
+      }
+    }
   },
 
 }

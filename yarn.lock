@@ -5579,6 +5579,10 @@ less-loader@^4.0.5:
     loader-utils "^1.1.0"
     pify "^3.0.0"
 
+less-vars-to-js@^1.2.1:
+  version "1.2.1"
+  resolved "http://registry.npm.taobao.org/less-vars-to-js/download/less-vars-to-js-1.2.1.tgz#7d48f096a98f0cbad77d07a242bad2ff14f01934"
+
 less@^2.7.2:
   version "2.7.3"
   resolved "http://registry.npm.taobao.org/less/download/less-2.7.3.tgz#cc1260f51c900a9ec0d91fb6998139e02507b63b"
@@ -6277,6 +6281,10 @@ npmlog@^4.0.2:
     console-control-strings "~1.1.0"
     gauge "~2.7.3"
     set-blocking "~2.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "http://registry.npm.taobao.org/nprogress/download/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
 
 nth-check@~1.0.1:
   version "1.0.1"
