@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Table, Button, Modal, Form, Input, message, Row, Col, Select, Popconfirm } from 'antd'
+import moment from 'moment'
+import { Table, Button, Modal, Form, Input, message, Row, Col, Select, Popconfirm, DatePicker } from 'antd'
 import styles from './index.less'
 
 const FormItem = Form.Item
@@ -12,23 +13,81 @@ const mapStateProps = (state) => {
   }
 }
 
-const ProductForm = connect(mapStateProps)(Form.create()(
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getProductList() {
+      dispatch({ type: 'product/getProductList' })
+    },
+    addProduct(data) {
+      dispatch({ type: 'product/addProduct', payload: data })
+        .then(this.getProductList)
+    },
+    updateProduct(data) {
+      dispatch({ type: 'product/updateProduct', payload: data })
+        .then(this.getProductList)
+    },
+    deleteProduct(record) {
+      dispatch({ type: 'product/deleteProduct', payload: record })
+        .then(this.getProductList)
+    },
+    changeProductForm(payload) {
+      dispatch({ type: 'product/changeProductForm', payload})
+    },
+    getManagerList() {
+      dispatch({ type: 'manager/getManagerList' })
+    }
+  }
+}
+
+const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
+  onFieldsChange(props, changedFields) {
+    props.changeProductForm(changedFields)
+  },
+  mapPropsToFields(props) {
+    let fields = {}
+    for(let i in props.product.productForm) {
+      fields[i] = Form.createFormField({
+        ...props.product.productForm[i]
+      })
+    }
+    return fields
+  },
+  onValuesChange(_, values) {
+    // console.log(values)
+  }
+})(
   class extends React.Component {
+    componentDidMount() {
+      this.props.getManagerList()
+    }
     handleSubmit(e) {
       e.preventDefault()
+      let self = this
       this.props.form.validateFields((err, values) => {
         if(!err) {
-          console.log('Received values of form: ', values)
+          values.valueDate = values.valueDate.format('YYYY-MM-DD')
+          if(!this.props.formData.fundId) {
+            this.props.addProduct(values)
+            message.success('修改成功')
+          } else {
+            values.fundId = this.props.formData.fundId
+            this.props.updateProduct(values)
+            message.success('添加成功')
+          }
+          self.cancel()
+          self.props.form.resetFields()
         }
       })
     }
-    handleManagerChange(v) {
-      console.info(v)
+    cancel() {
+      this.props.cancel()
     }
     render() {
       const { getFieldDecorator } = this.props.form
       const { formLayout } = this.props.dcad
       const { managerList } = this.props.manager
+      const { models } = this.props.loading
+      let loading = models.product
       return (
         <Form onSubmit={this.handleSubmit.bind(this)} className="common-form" >
           <Row>
@@ -50,6 +109,8 @@ const ProductForm = connect(mapStateProps)(Form.create()(
                 )}
               </FormItem>
             </Col>
+          </Row>
+          <Row>
             <Col span={12} >
               <FormItem label="管理人" {...formLayout} >
                 {getFieldDecorator('administrator', {
@@ -69,18 +130,19 @@ const ProductForm = connect(mapStateProps)(Form.create()(
                     style={{ width: 200 }}
                     placeholder="请选择产品经理"
                     optionFilterProp="children"
-                    onChange={this.handleManagerChange.bind(this)}
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
                     {
                       managerList.map((i, index) => (
-                        <Option key={index} >{i.managerName}</Option>
+                        <Option key={i.managerId} >{i.managerName}</Option>
                       ))
                     }
                   </Select>
                 )}
               </FormItem>
             </Col>
+          </Row>
+          <Row>
             <Col span={12} >
               <FormItem label="风险等级" {...formLayout} >
                 {getFieldDecorator('risk', {
@@ -90,15 +152,17 @@ const ProductForm = connect(mapStateProps)(Form.create()(
                 )}
               </FormItem>
             </Col>
-            <Col span={12} >
-              <FormItem label="发行日期" {...formLayout} >
+            <Col span={12}  >
+              <FormItem label="发行日期" {...formLayout}>
                 {getFieldDecorator('valueDate', {
                   rules: [{ required: true, message: '请输入发行日期！' }]
                 })(
-                  <Input placeholder="发行日期" />
+                  <DatePicker placeholder="发行日期" />
                 )}
               </FormItem>
             </Col>
+          </Row>
+          <Row>
             <Col span={12} >
               <FormItem label="储存期限" {...formLayout} >
                 {getFieldDecorator('term', {
@@ -119,7 +183,7 @@ const ProductForm = connect(mapStateProps)(Form.create()(
             </Col>
           </Row>
           <FormItem className={styles['btn-group']} >
-            <Button type="primary" htmlType="submit" className={styles["sign-in"]}>确认</Button>
+            <Button type="primary" loading={loading} htmlType="submit" className={styles["sign-in"]}>确认</Button>
             <Button className={styles.cancel} onClick={this.cancel.bind(this)}>取消</Button>
           </FormItem>
         </Form>
@@ -169,7 +233,7 @@ class Product extends React.Component {
         dataIndex: 'handle',
         render: (text, record) => (
           <div>
-            <Button>修改</Button>
+            <Button onClick={this.update.bind(this, record)} >修改</Button>
             <Popconfirm title="确认删除该产品吗" onConfirm={this.delete.bind(this, record)}>
               <Button className='common-next-btn' type="danger">删除</Button>
             </Popconfirm>
@@ -182,13 +246,41 @@ class Product extends React.Component {
       visible: false,
     }
   }
+  initForm() {
+    this.props.changeProductForm({
+      fundName: {},
+      fundType: {},
+      administrator: {},
+      managerId: {},
+      risk: {},
+      valueDate: {
+        value: moment()
+      },
+      term: {},
+      open: {}
+    })
+  }
   add() {
     this.setState({
       visible: true
     })
+    this.initForm()
+  }
+  update(record) {
+    this.setState({
+      visible: true,
+      formData: record
+    })
+    let data = {}
+    for(let i in record) {
+      data[i] = {}
+      data[i].value = record[i]
+    }
+    data.valueDate.value = moment(data.valueDate.value)
+    this.props.changeProductForm(data)
   }
   delete(record) {
-    message.success(record.fundName)
+    this.props.deleteProduct(record)
   }
   hideModal() {
     this.setState({
@@ -197,9 +289,10 @@ class Product extends React.Component {
   }
   componentDidMount() {
     this.props.getProductList()
+    this.initForm() 
   }
   render() {
-    let { columns, visible } = this.state
+    let { columns, visible, formData } = this.state
     const { productList } = this.props.product
     const { models } = this.props.loading
     let loading = models.product
@@ -213,7 +306,7 @@ class Product extends React.Component {
           columns={columns}
           loading={loading}
           bordered
-          rowKey="id"
+          rowKey="fundId"
         />
         <Modal
           title=""
@@ -222,7 +315,7 @@ class Product extends React.Component {
           footer={null}
           width="650px"
         >
-          <ProductForm />
+          <ProductForm cancel={this.hideModal.bind(this)} formData={formData} />
         </Modal>
 
       </div>
@@ -230,12 +323,5 @@ class Product extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getProductList() {
-      dispatch({ type: 'product/getProductList' })
-    }
-  }
-}
 
 export default connect(mapStateProps, mapDispatchToProps)(Product)

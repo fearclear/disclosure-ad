@@ -15,6 +15,12 @@ export default {
     *getManagerList({ payload }, { put, call }) {
       let data = yield call(manager.getManagerList)
       yield put({ type: 'managerList', payload: data })
+    },
+    *addManager({ payload }, { call }) {
+      yield call(manager.addManager, payload)
+    },
+    *deleteManager({ payload }, { call }) {
+      yield call(manager.deleteManager, payload)
     }
   },
 

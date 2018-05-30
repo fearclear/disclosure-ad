@@ -19,9 +19,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     sign.login()
-      .then(data => {
-        changeToken(data.tokenId)
-      })
+      .then(data => changeToken(data.tokenId))
   }
   componentDidMount() {
     const { loading, location } = this.props

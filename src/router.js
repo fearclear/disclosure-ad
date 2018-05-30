@@ -11,7 +11,7 @@ const { ConnectedRouter } = routerRedux
 const routes = [
   {
     path: '/product',
-    models: () => [import('./models/product')],
+    models: () => [import('./models/product'), import('./models/manager')],
     component: () => import('./routes/product/'),
   },
   {

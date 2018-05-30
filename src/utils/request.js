@@ -1,8 +1,12 @@
 import fetch from 'dva/fetch'
 import qs from 'querystring'
 
-function parseJSON(response) {
-  return response.json()
+function parseJSON(nullRes, response) {
+  if(!nullRes){
+    return response.json()
+  } else {
+    return response
+  }
 }
 
 function checkStatus(response) {
@@ -24,6 +28,10 @@ export function changeToken(token) {
   headers.set('x-disclosure-token', token)
 }
 
+export function getHeaders() {
+  return headers
+}
+
 /**
  * Requests a URL, returning a promise.
  *
@@ -36,6 +44,8 @@ export default function request(url, options) {
   if(options.method === 'put' || options.method === 'post') {
     headers.set('Content-Type', 'application/x-www-form-urlencoded')
     options.body = qs.stringify(options.data)
+  } else {
+    url += `?${qs.stringify(options.data)}`
   }
   if(/login$/.test(url)){
     headers.delete('x-disclosure-token')
@@ -44,9 +54,10 @@ export default function request(url, options) {
     ...options,
     headers,
   }
+  let nullRes = options.nullRes
   return fetch(url, options)
     .then(checkStatus)
-    .then(parseJSON)
+    .then(parseJSON.bind(this, nullRes))
     .then(data => {
       if(data instanceof Array) {
         data = {
