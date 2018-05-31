@@ -7,6 +7,14 @@ function getManagerList() {
   return request(api.manager.getManagerList)
 }
 
+function updateManager(data) {
+  return request(api.manager.updateManager, {
+    method: 'put',
+    nullRes: true,
+    data
+  })
+}
+
 function deleteManager(data) {
   return request(api.manager.deleteManager, {
     method: 'delete',
@@ -26,5 +34,6 @@ function addManager(data) {
 export default {
   getManagerList,
   addManager,
+  updateManager,
   deleteManager
 }

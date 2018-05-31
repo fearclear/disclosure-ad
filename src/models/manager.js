@@ -5,7 +5,14 @@ export default {
   namespace: 'manager',
 
   state: {
-    managerList: []
+    managerList: [],
+    imageUrl: null,
+    managerForm: {
+      info: {},
+      managerName: {},
+      managerPosition: {},
+      managerInroduction: {}
+    }
   },
 
   subscriptions: {
@@ -19,8 +26,17 @@ export default {
     *addManager({ payload }, { call }) {
       yield call(manager.addManager, payload)
     },
+    *updateManager({ payload }, { call }) {
+      yield call(manager.updateManager, payload)
+    },
+    *changeManagerForm({ payload }, { put }) {
+      yield put({ type: 'managerForm', payload })
+    },
     *deleteManager({ payload }, { call }) {
       yield call(manager.deleteManager, payload)
+    },
+    *updateImageUrl({ payload }, { put }) {
+      yield put({ type: 'imageUrl', payload })
     }
   },
 
@@ -29,6 +45,21 @@ export default {
       return {
         ...state,
         managerList: payload.list
+      }
+    },
+    managerForm(state, { payload }) {
+      return {
+        ...state,
+        managerForm: {
+          ...state.managerForm,
+          ...payload
+        }
+      }
+    },
+    imageUrl(state, { payload }) {
+      return {
+        ...state,
+        imageUrl: payload
       }
     }
   },

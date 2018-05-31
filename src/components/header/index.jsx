@@ -42,7 +42,13 @@ class Header extends React.Component {
                 <Link to="/manager">产品经理</Link>
               </MenuItem>
               <MenuItem key="notice">
-                <Link to="/product">产品公告</Link>
+                <Link to="/notice">产品公告</Link>
+              </MenuItem>
+              <MenuItem key="share">
+                <Link to="/share">产品分红</Link>
+              </MenuItem>
+              <MenuItem key="netvalue">
+                <Link to="/netvalue">净值导入</Link>
               </MenuItem>
             </Menu>
           </Col>

@@ -26,7 +26,7 @@ export default {
 
   effects: {
     *getProductList({ dispatch }, { put, call }) {
-      let list = yield call(product.getProductList)
+      let list = yield call(product.getProductList) || []
       yield put({ type: 'productList', payload: list })
     },
     *addProduct({ payload }, { call }) {

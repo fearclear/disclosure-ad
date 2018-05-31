@@ -18,6 +18,21 @@ const routes = [
     path: '/manager',
     models: () => [import('./models/manager')],
     component: () => import('./routes/manager')
+  },
+  {
+    path: '/notice',
+    models: () => [import('./models/product'), import('./models/notice')],
+    component: () => import('./routes/notice')
+  },
+  {
+    path: '/share',
+    models: () => [import('./models/product'), import('./models/share')],
+    component: () => import('./routes/share')
+  },
+  {
+    path: '/netvalue',
+    models: () => [import('./models/product'), import('./models/netvalue')],
+    component: () => import('./routes/netvalue')
   }
 ]
 

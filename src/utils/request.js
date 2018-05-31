@@ -1,5 +1,13 @@
 import fetch from 'dva/fetch'
+import { message } from 'antd'
 import qs from 'querystring'
+
+function handleErr(response) {
+  if(response.code>300) {
+    message.error(response.text)
+  }
+  return response
+}
 
 function parseJSON(nullRes, response) {
   if(!nullRes){
@@ -13,10 +21,7 @@ function checkStatus(response) {
   if(response.status >= 200 && response.status < 300) {
     return response
   }
-
-  const error = new Error(response.statusText)
-  error.response = response
-  throw error
+  return response
 }
 
 let headers = new Headers()
@@ -58,6 +63,7 @@ export default function request(url, options) {
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON.bind(this, nullRes))
+    .then(handleErr)
     .then(data => {
       if(data instanceof Array) {
         data = {

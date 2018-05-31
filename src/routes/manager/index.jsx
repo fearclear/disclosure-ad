@@ -29,20 +29,43 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({ type: 'manager/addManager', payload })
         .then(this.getManagerList)
     },
+    updateManager(payload) {
+      dispatch({ type: 'manager/updateManager', payload })
+        .then(this.getManagerList)
+    },
+    changeManagerForm(payload) {
+      dispatch({ type: 'manager/changeManagerForm', payload })
+    },
     deleteManager(payload) {
       dispatch({ type: 'manager/deleteManager', payload })
         .then(this.getManagerList)
+    },
+    updateImageUrl(payload) {
+      dispatch({ type: 'manager/updateImageUrl', payload })
     }
   }
 }
 
 
-const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create()(
+const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
+  onFieldsChange(props, changedFields) {
+    props.changeManagerForm(changedFields)
+  },
+  mapPropsToFields(props) {
+    let fields = {}
+    for(let i in props.manager.managerForm) {
+      fields[i] = Form.createFormField({
+        ...props.manager.managerForm[i]
+      })
+    }
+    return fields
+  }
+})(
   class extends React.Component {
     constructor(props) {
       super(props)
       this.state = {
-        imageUrl: null
+        loading: false
       }
     }
     handleSubmit(e) {
@@ -50,22 +73,23 @@ const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create()(
       let self = this
       this.props.form.validateFields((err, values) => {
         if(!err) {
-          values.managerPhoto = values.info.file.response.picUrl
-          this.props.addManager(values)
-          self.props.form.resetFields()
+          // values.managerPhoto = values.info.file.response.picUrl
+          values.managerPhoto = this.props.manager.imageUrl
+          if(!this.props.formData.managerId) {
+            this.props.addManager(values)
+            message.success('添加成功')
+          } else {
+            values.managerId = this.props.formData.managerId
+            this.props.updateManager(values)
+            message.success('修改成功')
+          }
           self.cancel()
-          message.success('添加成功')
+          self.props.form.resetFields()
         }
       })
     }
     cancel() {
       this.props.cancel()
-    }
-
-    getBase64(img, callback) {
-      const reader = new FileReader()
-      reader.addEventListener('load', () => callback(reader.result))
-      reader.readAsDataURL(img)
     }
 
     handleChange = (info) => {
@@ -75,15 +99,15 @@ const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create()(
       }
       if(info.file.status === 'done') {
         // Get this url from response in real world.
-        this.getBase64(info.file.originFileObj, imageUrl => this.setState({
-          imageUrl,
+        this.setState({
           loading: false,
-        }))
+        })
+        this.props.updateImageUrl(info.file.response.picUrl)
       }
     }
 
     render() {
-      const { imageUrl } = this.state
+      const { imageUrl } = this.props.manager
       const { getFieldDecorator } = this.props.form
       const { formLayout } = this.props.dcad
       const { models } = this.props.loading
@@ -102,19 +126,16 @@ const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create()(
           <Row>
             <Col >
               <FormItem label="头像" {...formLayout} >
-                {getFieldDecorator('info', {
-                  rules: [{ required: true, message: '请选择头像！' }]
-                })(
+                {getFieldDecorator('info', {})(
                   <Upload
                     listType="picture-card"
                     showUploadList={false}
                     action={`${config.url}/import`}
                     data={{ type: 'photo' }}
                     headers={headers}
-                    // beforeUpload={beforeUpload}
                     onChange={this.handleChange.bind(this)}
                   >
-                    {imageUrl ? <img style={{ width: '128px' }} src={imageUrl} alt="avatar" /> : uploadButton}
+                    {imageUrl ? <img style={{ width: '128px' }} src={`${config.imgUrl}/${imageUrl}`} alt="avatar" /> : uploadButton}
                   </Upload>
                 )}
               </FormItem>
@@ -187,10 +208,12 @@ class Manager extends React.Component {
       {
         title: '操作',
         dataIndex: 'handle',
+        align: 'center',
+        width: '200px',
         render: (text, record) => (
           <div>
-            <Button>修改</Button>
-            <Popconfirm title="确认删除该产品吗" onConfirm={this.delete.bind(this, record)}>
+            <Button onClick={this.update.bind(this, record)} >修改</Button>
+            <Popconfirm title="确认删除该成员吗" onConfirm={this.delete.bind(this, record)}>
               <Button className='common-next-btn' type="danger">删除</Button>
             </Popconfirm>
           </div>
@@ -199,18 +222,38 @@ class Manager extends React.Component {
     ]
     this.state = {
       columns,
-      visible: false
+      visible: false,
+      formData: {}
     }
   }
 
   componentDidMount() {
     this.props.getManagerList()
+    this.initForm() 
   }
 
   add() {
     this.setState({
-      visible: true
+      visible: true,
+      formData: {}
     })
+    this.initForm()
+    this.props.updateImageUrl(null)
+  }
+
+  update(record) {
+    this.setState({
+      visible: true,
+      formData: record
+    })
+    let data = {}
+    for(let i in record) {
+      data[i] = {}
+      data[i].value = record[i]
+    }
+    this.props.changeManagerForm(data)
+    let imageUrl = record.managerPhoto?record.managerPhoto:null
+    this.props.updateImageUrl(imageUrl)
   }
 
   hideModal() {
@@ -223,8 +266,17 @@ class Manager extends React.Component {
     this.props.deleteManager(record)
   }
 
+  initForm() {
+    this.props.changeManagerForm({
+      info: {},
+      managerName: {},
+      managerPosition: {},
+      managerInroduction: {}
+    })
+  }
+
   render() {
-    let { columns, visible } = this.state
+    let { columns, visible, formData } = this.state
     const { managerList } = this.props.manager
     const { models } = this.props.loading
     let loading = models.manager
@@ -247,7 +299,7 @@ class Manager extends React.Component {
           footer={null}
           width="650px"
         >
-          <MessageForm cancel={this.hideModal.bind(this)} />
+          <MessageForm cancel={this.hideModal.bind(this)} formData={formData} />
         </Modal>
       </div>
     )

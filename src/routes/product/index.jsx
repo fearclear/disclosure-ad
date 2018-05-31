@@ -68,11 +68,11 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           values.valueDate = values.valueDate.format('YYYY-MM-DD')
           if(!this.props.formData.fundId) {
             this.props.addProduct(values)
-            message.success('修改成功')
+            message.success('添加成功')
           } else {
             values.fundId = this.props.formData.fundId
             this.props.updateProduct(values)
-            message.success('添加成功')
+            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
@@ -224,12 +224,22 @@ class Product extends React.Component {
         dataIndex: 'risk'
       },
       {
+        title: '发行日期',
+        dataIndex: 'valueDate',
+        render: text => (moment(text).format('YYYY-MM-DD'))
+      },
+      {
+        title: '开放频率',
+        dataIndex: 'term'
+      },
+      {
         title: '运行状态',
         dataIndex: 'state'
       },
       {
         title: '操作',
         align: 'center',
+        width: '200px',
         dataIndex: 'handle',
         render: (text, record) => (
           <div>
@@ -244,6 +254,7 @@ class Product extends React.Component {
     this.state = {
       columns,
       visible: false,
+      formData: {}
     }
   }
   initForm() {
@@ -262,7 +273,8 @@ class Product extends React.Component {
   }
   add() {
     this.setState({
-      visible: true
+      visible: true,
+      formData: {}
     })
     this.initForm()
   }
