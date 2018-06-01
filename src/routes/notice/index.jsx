@@ -80,11 +80,9 @@ const NoticeForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           values.valueDate = moment(values.valueDate).format('YYYY-MM-DD')
           if(!this.props.formData.noticeId) {
             this.props.addNotice(values)
-            message.success('添加成功')
           } else {
             values.noticeId = this.props.formData.noticeId
             this.props.updateNotice(values)
-            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
@@ -158,9 +156,9 @@ const NoticeForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
                     {
-                      productList.map((i, index) => (
+                      productList?productList.map((i, index) => (
                         <Option key={i.fundId} >{i.fundName}</Option>
-                      ))
+                      )):''
                     }
                   </Select>
                 )}

@@ -2,24 +2,21 @@ import fetch from 'dva/fetch'
 import { message } from 'antd'
 import qs from 'querystring'
 
-function handleErr(response) {
-  if(response.code>300) {
-    message.error(response.text)
-  }
-  return response
-}
+let status = {}
 
 function parseJSON(nullRes, response) {
-  if(!nullRes){
+  status.status = response.status
+  status.ok = response.ok
+  if(!nullRes || status.status>300){
     return response.json()
   } else {
-    return response
+    return response.text()
   }
 }
 
 function checkStatus(response) {
-  if(response.status >= 200 && response.status < 300) {
-    return response
+  if(status.status>300) {
+    message.error(response.text)
   }
   return response
 }
@@ -61,16 +58,17 @@ export default function request(url, options) {
   }
   let nullRes = options.nullRes
   return fetch(url, options)
-    .then(checkStatus)
     .then(parseJSON.bind(this, nullRes))
-    .then(handleErr)
+    .then(checkStatus)
     .then(data => {
       if(data instanceof Array) {
         data = {
           list: data,
         }
       }
-      return { ...data }
+      return { ...data, ...status }
     })
-    .catch(err => ({ err }))
+    .catch(err => {
+      return {err}
+    })
 }

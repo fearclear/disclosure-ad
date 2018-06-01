@@ -31,11 +31,21 @@ export default {
       updateShare: `${url}/share/update`, // 更新产品分红
       deleteShare: `${url}/share/delete` // 删除产品分红
     },
+    user: {
+      getUserList: `${url}/findAllUser`,  // 用户列表
+      addUser: `${url}/addUser`, // 新建用户
+      updateUser: `${url}/updateUser`, // 更新用户
+      deleteUser: `${url}/delUser`, // 删除用户
+      getProduct: `${url}/fund/fundUserList`, // 查询持有产品
+      addProduct: `${url}/fund/fundUserCreate`, // 新增产品分配
+      deleteProduct: `${url}/fund/fundUserDelete`, // 删除产品分配
+    },
     netvalue: {
       getNetvalueList: `${url}/netvalue/findList`,  // 产品净值列表
       addNetvalue: `${url}/netvalue/create`, // 新建产品净值
       updateNetvalue: `${url}/netvalue/update`, // 更新产品净值
-      deleteNetvalue: `${url}/netvalue/delete` // 删除产品净值
+      deleteNetvalue: `${url}/netvalue/delete`, // 删除产品净值
+      import: `${url}/netvalue/import` // 删除产品净值
     },
   },
   key: {

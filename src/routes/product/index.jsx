@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'dva'
 import moment from 'moment'
-import { Table, Button, Modal, Form, Input, message, Row, Col, Select, Popconfirm, DatePicker } from 'antd'
+import { Table, Button, Modal, Form, Input, Row, Col, Select, Popconfirm, DatePicker } from 'antd'
 import styles from './index.less'
 
 const FormItem = Form.Item
@@ -68,11 +68,9 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           values.valueDate = values.valueDate.format('YYYY-MM-DD')
           if(!this.props.formData.fundId) {
             this.props.addProduct(values)
-            message.success('添加成功')
           } else {
             values.fundId = this.props.formData.fundId
             this.props.updateProduct(values)
-            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
@@ -133,9 +131,9 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
                     {
-                      managerList.map((i, index) => (
+                      managerList?managerList.map((i, index) => (
                         <Option key={i.managerId} >{i.managerName}</Option>
-                      ))
+                      )):''
                     }
                   </Select>
                 )}

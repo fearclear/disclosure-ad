@@ -1,5 +1,6 @@
 import { product } from '../services'
 import moment from 'moment'
+import { message } from 'antd'
 
 export default {
 
@@ -30,13 +31,22 @@ export default {
       yield put({ type: 'productList', payload: list })
     },
     *addProduct({ payload }, { call }) {
-      yield call(product.addProduct, payload)
+      let data = yield call(product.addProduct, payload)
+      if(data.ok) {
+        message.success('添加成功')
+      }
     },
     *updateProduct({ payload }, { call }) {
-      yield call(product.updateProduct, payload)
+      let data = yield call(product.updateProduct, payload)
+      if(data.ok) {
+        message.success('修改成功')
+      }
     },
     *deleteProduct({ payload }, { call }) {
-      yield call(product.deleteProduct, payload)
+      let data = yield call(product.deleteProduct, payload)
+      if(data.ok) {
+        message.success('删除成功')
+      }
     },
     *changeProductForm({ payload }, { put }) {
       yield put({ type: 'productForm', payload })

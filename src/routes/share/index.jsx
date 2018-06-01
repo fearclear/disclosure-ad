@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'dva'
 import moment from 'moment'
-import { Table, Button, Modal, Form, message, Row, Col, Select, Popconfirm, DatePicker, InputNumber } from 'antd'
+import { Table, Button, Modal, Form, Row, Col, Select, Popconfirm, DatePicker, InputNumber } from 'antd'
 import styles from './index.less'
 
 const FormItem = Form.Item
@@ -68,11 +68,9 @@ const ShareForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           values.valueDate = moment(values.valueDate).format('YYYY-MM-DD')
           if(!this.props.formData.shareId) {
             this.props.addShare(values)
-            message.success('添加成功')
           } else {
             values.shareId = this.props.formData.shareId
             this.props.updateShare(values)
-            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
@@ -105,9 +103,9 @@ const ShareForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
                     {
-                      productList.map((i, index) => (
+                      productList?productList.map((i, index) => (
                         <Option key={i.fundId} >{i.fundName}</Option>
-                      ))
+                      )):''
                     }
                   </Select>
                 )}

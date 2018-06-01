@@ -1,5 +1,6 @@
 import { notice } from '../services'
 import moment from 'moment'
+import { message } from 'antd'
 
 export default {
 
@@ -27,13 +28,22 @@ export default {
       yield put({ type: 'noticeList', payload: list })
     },
     *addNotice({ payload }, { call }) {
-      yield call(notice.addNotice, payload)
+      let data = yield call(notice.addNotice, payload)
+      if(data.ok) {
+        message.success('添加成功')
+      }
     },
     *updateNotice({ payload }, { call }) {
-      yield call(notice.updateNotice, payload)
+      let data = yield call(notice.updateNotice, payload)
+      if(data.ok) {
+        message.success('修改成功')
+      }
     },
     *deleteNotice({ payload }, { call }) {
-      yield call(notice.deleteNotice, payload)
+      let data = yield call(notice.deleteNotice, payload)
+      if(data.ok) {
+        message.success('删除成功')
+      }
     },
     *changeNoticeForm({ payload }, { put }) {
       yield put({ type: 'noticeForm', payload })

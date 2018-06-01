@@ -1,4 +1,5 @@
 import { manager } from '../services'
+import { message } from 'antd'
 
 export default {
 
@@ -24,16 +25,25 @@ export default {
       yield put({ type: 'managerList', payload: data })
     },
     *addManager({ payload }, { call }) {
-      yield call(manager.addManager, payload)
+      let data = yield call(manager.addManager, payload)
+      if(data.ok) {
+        message.success('添加成功')
+      }
     },
     *updateManager({ payload }, { call }) {
-      yield call(manager.updateManager, payload)
+      let data = yield call(manager.updateManager, payload)
+      if(data.ok) {
+        message.success('修改成功')
+      }
     },
     *changeManagerForm({ payload }, { put }) {
       yield put({ type: 'managerForm', payload })
     },
     *deleteManager({ payload }, { call }) {
-      yield call(manager.deleteManager, payload)
+      let data = yield call(manager.deleteManager, payload)
+      if(data.ok) {
+        message.success('删除成功')
+      }
     },
     *updateImageUrl({ payload }, { put }) {
       yield put({ type: 'imageUrl', payload })

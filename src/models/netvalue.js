@@ -1,4 +1,5 @@
 import { netvalue } from '../services'
+import { message } from 'antd'
 
 export default {
 
@@ -24,16 +25,25 @@ export default {
       yield put({ type: 'netvalueList', payload: data })
     },
     *addNetvalue({ payload }, { call }) {
-      yield call(netvalue.addNetvalue, payload)
+      let data = yield call(netvalue.addNetvalue, payload)
+      if(data.ok) {
+        message.success('添加成功')
+      }
     },
     *updateNetvalue({ payload }, { call }) {
-      yield call(netvalue.updateNetvalue, payload)
+      let data = yield call(netvalue.updateNetvalue, payload)
+      if(data.ok) {
+        message.success('修改成功')
+      }
     },
     *changeNetvalueForm({ payload }, { put }) {
       yield put({ type: 'netvalueForm', payload })
     },
     *deleteNetvalue({ payload }, { call }) {
-      yield call(netvalue.deleteNetvalue, payload)
+      let data = yield call(netvalue.deleteNetvalue, payload)
+      if(data.ok) {
+        message.success('删除成功')
+      }
     },
     *updateImageUrl({ payload }, { put }) {
       yield put({ type: 'imageUrl', payload })
@@ -60,7 +70,6 @@ export default {
       }
     },
     fundId(state, { payload }) {
-      console.log(payload)
       return {
         ...state,
         fundId: payload

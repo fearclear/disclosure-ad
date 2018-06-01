@@ -1,4 +1,5 @@
 import { share } from '../services'
+import { message } from 'antd'
 
 export default {
 
@@ -22,16 +23,25 @@ export default {
       yield put({ type: 'shareList', payload: data })
     },
     *addShare({ payload }, { call }) {
-      yield call(share.addShare, payload)
+      let data = yield call(share.addShare, payload)
+      if(data.ok) {
+        message.success('添加成功')
+      }
     },
     *updateShare({ payload }, { call }) {
-      yield call(share.updateShare, payload)
+      let data = yield call(share.updateShare, payload)
+      if(data.ok) {
+        message.success('修改成功')
+      }
     },
     *changeShareForm({ payload }, { put }) {
       yield put({ type: 'shareForm', payload })
     },
     *deleteShare({ payload }, { call }) {
-      yield call(share.deleteShare, payload)
+      let data = yield call(share.deleteShare, payload)
+      if(data.ok) {
+        message.success('删除成功')
+      }
     },
   },
 

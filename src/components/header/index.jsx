@@ -50,6 +50,9 @@ class Header extends React.Component {
               <MenuItem key="netvalue">
                 <Link to="/netvalue">净值导入</Link>
               </MenuItem>
+              <MenuItem key="user">
+                <Link to="/user">用户管理</Link>
+              </MenuItem>
             </Menu>
           </Col>
         </Row>

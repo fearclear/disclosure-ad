@@ -1,7 +1,6 @@
 import '@babel/polyfill'
 import dva from 'dva'
 import createLoading from 'dva-loading'
-import { message } from 'antd'
 import createHistory from 'history/createBrowserHistory'
 import './index.css'
 
@@ -12,7 +11,7 @@ const app = dva({
   }),
   history: createHistory(),
   onError(e) {
-    message.error('error', e.message)
+    console.log(e, 'error穿透')
   }
 })
 

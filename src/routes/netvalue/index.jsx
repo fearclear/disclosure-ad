@@ -1,11 +1,20 @@
 import React from 'react'
 import { connect } from 'dva'
 import moment from 'moment'
-import { Table, Button, Modal, Form, message, Row, Col, Select, Popconfirm, DatePicker, InputNumber } from 'antd'
+import { config } from '../../utils'
+import { getHeaders } from '../../utils/request'
+import { Table, Button, Modal, Form, message, Row, Col, Icon, Select, Upload, Popconfirm, DatePicker, InputNumber } from 'antd'
 import styles from './index.less'
 
 const FormItem = Form.Item
 const Option = Select.Option
+const Dragger = Upload.Dragger
+const headers = {}
+const tempHeaders = getHeaders()
+tempHeaders.delete('Content-Type')
+for(var pair of tempHeaders.entries()) {
+  headers[pair[0]] = pair[1]
+}
 
 const mapStateProps = (state) => {
   return {
@@ -72,18 +81,16 @@ const NetvalueForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
       this.props.form.validateFields((err, values) => {
         if(!err) {
           values.valueDate = moment(values.valueDate).format('YYYY-MM-DD')
-          if(!this.props.netvalue.fundId){
+          if(!this.props.netvalue.fundId) {
             message.error('请选择产品')
             return
           }
           values.fundId = this.props.netvalue.fundId
           if(!this.props.formData.netvalueId) {
             this.props.addNetvalue(values)
-            message.success('添加成功')
           } else {
             values.netvalueId = this.props.formData.netvalueId
             this.props.updateNetvalue(values)
-            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
@@ -181,7 +188,9 @@ class netvalue extends React.Component {
     this.state = {
       columns,
       visible: false,
-      formData: {}
+      importStatus: false,
+      formData: {},
+      fileList: []
     }
   }
   initForm() {
@@ -220,6 +229,11 @@ class netvalue extends React.Component {
       visible: false
     })
   }
+  cancelImport() {
+    this.setState({
+      importStatus: false
+    })
+  }
   componentDidMount() {
     this.props.getNetvalueList()
     this.props.getProductList()
@@ -231,9 +245,33 @@ class netvalue extends React.Component {
     })
     this.props.changeFundId(fundId)
   }
+  import() {
+    this.setState({
+      importStatus: true
+    })
+  }
+  handleChange(info) {
+    let fileList = info.fileList
+
+    // 1. Limit the number of uploaded files
+    //    Only to show two recent uploaded files, and old ones will be replaced by the new
+    fileList = fileList.slice(-1)
+
+    if(info.file.status === 'done') {
+      message.success(`${info.file.name}文件上传成功！`)
+      fileList = []
+      this.setState({
+        importStatus: false
+      })
+    } else if(info.file.status === 'error') {
+      message.error(`${info.file.name}文件上传失败！`)
+    }
+    this.setState({
+      fileList
+    })
+  }
   render() {
-    console.log(this.props.netvalue)
-    let { columns, visible, formData } = this.state
+    let { columns, visible, formData, importStatus, fileList } = this.state
     const { netvalueList, fundId } = this.props.netvalue
     const { productList } = this.props.product
     const { models } = this.props.loading
@@ -242,6 +280,7 @@ class netvalue extends React.Component {
       <div>
         <div className={styles.search}>
           <Button className={styles.btn} onClick={this.add.bind(this)} type="primary">新增</Button>
+          <Button className={styles['btn-next']} onClick={this.import.bind(this)} type="primary">导入</Button>
           <Select
             showSearch
             style={{ width: 200, marginLeft: '20px' }}
@@ -252,9 +291,9 @@ class netvalue extends React.Component {
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           >
             {
-              productList.map((i, index) => (
+              productList?productList.map((i, index) => (
                 <Option key={i.fundId} >{i.fundName}</Option>
-              ))
+              )):''
             }
           </Select>
         </div>
@@ -273,7 +312,29 @@ class netvalue extends React.Component {
         >
           <NetvalueForm cancel={this.hideModal.bind(this)} formData={formData} fundId={fundId} />
         </Modal>
-      </div>
+        <Modal
+          visible={importStatus}
+          onCancel={this.cancelImport.bind(this)}
+          footer={null}
+        >
+          <div style={{marginTop: '20px'}} >
+            <Dragger
+              name='file'
+              multiple={false}
+              headers={headers}
+              fileList={fileList}
+              action={config.api.netvalue.import}
+              onChange={this.handleChange.bind(this)}
+            >
+              <p className="ant-upload-drag-icon">
+                <Icon type="inbox" />
+              </p>
+              <p className="ant-upload-text">点击或将文件拖入到此区域上传</p>
+              <p className="ant-upload-hint">支持xls/xlsx文件</p>
+            </Dragger>
+          </div>
+        </Modal>
+      </div >
     )
   }
 }

@@ -33,6 +33,11 @@ const routes = [
     path: '/netvalue',
     models: () => [import('./models/product'), import('./models/netvalue')],
     component: () => import('./routes/netvalue')
+  },
+  {
+    path: '/user',
+    models: () => [import('./models/product'), import('./models/user')],
+    component: () => import('./routes/user')
   }
 ]
 

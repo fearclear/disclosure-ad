@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Table, Button, Popconfirm, Row, Col, Form, Input, message, Modal, Upload, Icon, Avatar } from 'antd'
+import { Table, Button, Popconfirm, Row, Col, Form, Input, Modal, Upload, Icon, Avatar } from 'antd'
 import { config } from '../../utils'
 import { getHeaders } from '../../utils/request'
 import styles from './index.less'
@@ -77,11 +77,9 @@ const MessageForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           values.managerPhoto = this.props.manager.imageUrl
           if(!this.props.formData.managerId) {
             this.props.addManager(values)
-            message.success('添加成功')
           } else {
             values.managerId = this.props.formData.managerId
             this.props.updateManager(values)
-            message.success('修改成功')
           }
           self.cancel()
           self.props.form.resetFields()
