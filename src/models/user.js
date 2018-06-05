@@ -50,25 +50,45 @@ export default {
       let data = yield call(user.getProduct, payload)
       yield put({ type: 'userProductList', payload: data })
     },
+    *changeUserProductList({ payload }, { put }) {
+      yield put({ type: 'userProductList', payload })
+    },
     *addProduct({ payload }, { put, call, select }) {
       payload.fundUserId = yield select(state => state.user.fundUserId)
       let data = yield call(user.addProduct, payload)
       if(data.ok) {
         message.success('添加成功')
       }
+      let fundUserId = yield select(state => state.user.fundUserId)
+      yield put({
+        type: 'getProductList', payload: {
+          fundUserId
+        }
+      })
     },
-    *deleteProduct({ payload }, { call }) {
+    *deleteProduct({ payload }, { call, select, put }) {
       let data = yield call(user.deleteProduct, payload)
       if(data.ok) {
         message.success('删除成功')
+        
       }
+      let fundUserId = yield select(state => state.user.fundUserId)
+      yield put({
+        type: 'getProductList', payload: {
+          fundUserId
+        }
+      })
     },
-    *changeFundUserId({ payload }, { put, call, take, select }) {
+    *changeFundUserId({ payload }, { put, call, select }) {
       yield put({ type: 'fundUserId', payload })
-      yield take('fundUserId/@@end')
-      const fundUserId = yield select((state) => state.user.fundUserId)
-      yield put({ type: 'getProductList', payload: {fundUserId} })
-    }
+      let fundUserId = yield select(state => state.user.fundUserId)
+      yield put({
+        type: 'getProductList', payload: {
+          fundUserId
+        }
+      })
+    },
+
   },
 
   reducers: {

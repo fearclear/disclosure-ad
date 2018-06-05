@@ -35,17 +35,17 @@ const mapDispatchToProps = (dispatch) => {
     getProductList() {
       dispatch({ type: 'product/getProductList' })
     },
-    getUserProductList(payload) {
-      payload = {
-        fundUserId: this.user.fundUserId
-      }
-      dispatch({ type: 'user/getProductList', payload })
-    },
     addUserProduct(payload) {
       dispatch({ type: 'user/addProduct', payload })
     },
+    deleteProduct(payload) {
+      dispatch({ type: 'user/deleteProduct', payload})
+    },
     changeFundUserId(payload) {
       dispatch({ type: 'user/changeFundUserId', payload })
+    },
+    changeUserProductList(payload) {
+      dispatch({ type: 'user/changeUserProductList', payload})
     }
   }
 }
@@ -152,7 +152,6 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create()(
       e.preventDefault()
       let self = this
       this.props.form.validateFields((err, values) => {
-        console.log(values)
         if(!err) {
           this.props.addUserProduct(values)
           self.props.form.resetFields()
@@ -256,6 +255,16 @@ class user extends React.Component {
         title: '产品名称',
         dataIndex: 'fundName',
         align: 'center'
+      },
+      {
+        title: '操作',
+        dataIndex: 'handle',
+        align: 'center', 
+        render: (text, record) => (
+          <Popconfirm title="确认删除该用户吗" onConfirm={this.deleteProductBind.bind(this, record)}>
+              <Button className='common-next-btn' type="danger">删除</Button>
+          </Popconfirm>
+        )
       }
     ]
     this.state = {
@@ -304,10 +313,16 @@ class user extends React.Component {
     record.delUserId = record.userId
     this.props.deleteUser(record)
   }
+  deleteProductBind(record) {
+    this.props.deleteProduct(record)
+  }
   hideModal() {
     this.setState({
       visible: false,
       showProduct: false
+    })
+    this.props.changeUserProductList.call(this, {
+      list: []
     })
   }
   componentDidMount() {
@@ -317,7 +332,6 @@ class user extends React.Component {
   render() {
     let { columns, visible, formData, showProduct, userProductColumns } = this.state
     const { userList, userProductList } = this.props.user
-    console.log(userProductList)
     const { models } = this.props.loading
     let loading = models.user
     return (
@@ -350,7 +364,7 @@ class user extends React.Component {
             dataSource={userProductList}
             columns={userProductColumns}
             loading={loading}
-            rowKey="userId"
+            rowKey="id"
           />
           <ProductForm />
         </Modal>

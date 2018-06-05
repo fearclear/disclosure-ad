@@ -40,7 +40,7 @@ function addProduct(data) {
 }
 
 function deleteProduct(data) {
-  return request(api.user.deleteUser, {
+  return request(api.user.deleteProduct, {
     method: 'delete',
     nullRes: true,
     data
