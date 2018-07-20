@@ -252,6 +252,7 @@ class netvalue extends React.Component {
   }
   beforeUpload(file) {
     if(!this.props.netvalue.fundId) {
+      message.error('请选择产品后再导入产品信息')
       return false
     }
   }
