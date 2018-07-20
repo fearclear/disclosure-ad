@@ -104,7 +104,7 @@ const NoticeForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
       fileList = fileList.map((file) => {
         if(file.response) {
           // Component will show file.url as link
-          file.url = `${config.imgUrl}/${file.response.picUrl}`
+          file.url = `${file.response.picUrl}`
         }
         return file
       })
@@ -232,7 +232,7 @@ class notice extends React.Component {
         align: 'center',
         render: text => {
           if(text) {
-            return (<a href={text} target="_blank" >附件</a>)
+            return (<a href={`${config.imgUrl}/${text}`} target="_blank" >附件</a>)
           } else {
             return '暂无附件'
           }

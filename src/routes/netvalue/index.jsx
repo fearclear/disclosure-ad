@@ -250,11 +250,14 @@ class netvalue extends React.Component {
       importStatus: true
     })
   }
+  beforeUpload(file) {
+    if(!this.props.netvalue.fundId) {
+      return false
+    }
+  }
   handleChange(info) {
     let fileList = info.fileList
 
-    // 1. Limit the number of uploaded files
-    //    Only to show two recent uploaded files, and old ones will be replaced by the new
     fileList = fileList.slice(-1)
 
     if(info.file.status === 'done') {
@@ -262,6 +265,9 @@ class netvalue extends React.Component {
       fileList = []
       this.setState({
         importStatus: false
+      })
+      this.props.getNetvalueList({
+        fundId: this.props.netvalue.fundId
       })
     } else if(info.file.status === 'error') {
       message.error(`${info.file.name}文件上传失败！`)
@@ -323,7 +329,9 @@ class netvalue extends React.Component {
               multiple={false}
               headers={headers}
               fileList={fileList}
+              data={{fundId: fundId}}
               action={config.api.netvalue.import}
+              beforeUpload={this.beforeUpload.bind(this)}
               onChange={this.handleChange.bind(this)}
             >
               <p className="ant-upload-drag-icon">

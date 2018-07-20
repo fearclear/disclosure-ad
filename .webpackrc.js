@@ -4,7 +4,7 @@ export default {
   theme: "./theme.config.js",
   proxy: {
     "/disclosure": {
-      "target": "http://192.168.0.188:9444/disclosure/",
+      "target": "http://120.27.159.30:9444/disclosure/",
       "changeOrigin": true,
       "pathRewrite": {"^/disclosure": ""}
     }

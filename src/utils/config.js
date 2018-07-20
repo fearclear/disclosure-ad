@@ -1,6 +1,6 @@
-const url = 'http://192.168.0.188:9444/disclosure'
+const url = 'http://120.27.159.30:9444/disclosure'
 // const url = './disclosure'
-const imgUrl = 'http://192.168.0.188:8088'
+const imgUrl = 'http://120.27.159.30:8077'
 export default {
   api: {
     sign: {
@@ -55,6 +55,6 @@ export default {
   url,
   imgUrl,
   fav: '/favicon.ico',
-  logo: '/assets/logo.png',
-  userIcon: '/assets/user-icon.png'
+  logo: 'http://192.168.1.188/disclosure/assets/logo.png',
+  userIcon: 'http://192.168.1.188/disclosure/assets/user-icon.png'
 }
