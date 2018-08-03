@@ -84,6 +84,7 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
       const { getFieldDecorator } = this.props.form
       const { formLayout } = this.props.dcad
       const { managerList } = this.props.manager
+      const { params } = this.props.product
       const { models } = this.props.loading
       let loading = models.product
       return (
@@ -101,9 +102,18 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
             <Col span={12} >
               <FormItem label="产品类型" {...formLayout} >
                 {getFieldDecorator('fundType', {
-                  rules: [{ required: true, message: '请输入产品类型！' }]
+                  rules: [{ required: true, message: '请选择产品类型！' }]
                 })(
-                  <Input placeholder="产品类型" />
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="请选择产品类型"
+                  >
+                    {
+                      params.fundType.map((i, index) => (
+                        <Option key={i.id} >{i.name}</Option>
+                      ))
+                    }
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -143,16 +153,25 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
             <Col span={12} >
               <FormItem label="风险等级" {...formLayout} >
                 {getFieldDecorator('risk', {
-                  rules: [{ required: true, message: '请输入风险等级！' }]
+                  rules: [{ required: true, message: '请选择风险等级！' }]
                 })(
-                  <Input placeholder="风险等级" />
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="请选择风险等级"
+                  >
+                    {
+                      params.risk.map((i, index) => (
+                        <Option key={i.id} >{i.name}</Option>
+                      ))
+                    }
+                  </Select>
                 )}
               </FormItem>
             </Col>
             <Col span={12}  >
               <FormItem label="发行日期" {...formLayout}>
                 {getFieldDecorator('valueDate', {
-                  rules: [{ required: true, message: '请输入发行日期！' }]
+                  rules: [{ required: true, message: '请选择发行日期！' }]
                 })(
                   <DatePicker placeholder="发行日期" />
                 )}
@@ -161,20 +180,29 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
           </Row>
           <Row>
             <Col span={12} >
-              <FormItem label="储存期限" {...formLayout} >
+              <FormItem label="存续期限" {...formLayout} >
                 {getFieldDecorator('term', {
-                  rules: [{ required: true, message: '请输入储存期限！' }]
+                  rules: [{ required: true, message: '请输入存续期限！' }]
                 })(
-                  <Input placeholder="储存期限" />
+                  <Input placeholder="存续期限" />
                 )}
               </FormItem>
             </Col>
             <Col span={12} >
               <FormItem label="开放频率" {...formLayout} >
                 {getFieldDecorator('open', {
-                  rules: [{ required: true, message: '请输入开放频率！' }]
+                  rules: [{ required: true, message: '请选择开放频率！' }]
                 })(
-                  <Input placeholder="开放频率" />
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="请选择开放频率"
+                  >
+                    {
+                      params.open.map((i, index) => (
+                        <Option key={i.id} >{i.name}</Option>
+                      ))
+                    }
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -190,8 +218,9 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
 ))
 
 class Product extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+    const { params } = this.props.product
     const columns = [
       {
         title: '序号',
@@ -206,7 +235,13 @@ class Product extends React.Component {
       {
         title: '产品类型',
         dataIndex: 'fundType',
-        render: text => text
+        render: text => {
+          for(let i=0;i<params.fundType.length;i++) {
+            if(params.fundType[i].id === +text) {
+              return params.fundType[i].name
+            }
+          }
+        }
       },
       {
         title: '管理人',
@@ -218,7 +253,14 @@ class Product extends React.Component {
       },
       {
         title: '风险等级',
-        dataIndex: 'risk'
+        dataIndex: 'risk',
+        render: text => {
+          for(let i=0;i<params.risk.length;i++) {
+            if(params.risk[i].id === +text) {
+              return params.risk[i].name
+            }
+          }
+        }
       },
       {
         title: '发行日期',
@@ -227,11 +269,25 @@ class Product extends React.Component {
       },
       {
         title: '开放频率',
-        dataIndex: 'term'
+        dataIndex: 'open',
+        render: text => {
+          for(let i=0;i<params.open.length;i++) {
+            if(params.open[i].id === +text) {
+              return params.open[i].name
+            }
+          }
+        }
       },
       {
         title: '运行状态',
-        dataIndex: 'state'
+        dataIndex: 'state',
+        render: text => {
+          for(let i=0;i<params.state.length;i++) {
+            if(params.state[i].id === +text) {
+              return params.state[i].name
+            }
+          }
+        }
       },
       {
         title: '操作',
