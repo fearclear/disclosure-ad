@@ -54,7 +54,7 @@ export default {
   },
   url,
   imgUrl,
-  fav: '/favicon.ico',
+  fav: 'http://192.168.1.188/disclosure/favicon.ico',
   logo: 'http://192.168.1.188/disclosure/assets/logo.png',
   userIcon: 'http://192.168.1.188/disclosure/assets/user-icon.png'
 }
