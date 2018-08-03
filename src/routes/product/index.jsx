@@ -121,7 +121,6 @@ const ProductForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
             <Col span={12} >
               <FormItem label="产品经理" {...formLayout} >
                 {getFieldDecorator('managerId', {
-                  rules: [{ required: true, message: '请输入产品经理！' }]
                 })(
                   <Select
                     showSearch

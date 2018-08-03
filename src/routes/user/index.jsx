@@ -120,7 +120,6 @@ const UserForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
             <Col >
               <FormItem label="身份证号" {...formLayout}>
                 {getFieldDecorator('userCard', {
-                  rules: [{ required: true, message: '请输入身份证号！' }]
                 })(
                   <Input style={{ width: 200 }} placeholder="身份证号" />
                 )}
@@ -129,7 +128,6 @@ const UserForm = connect(mapStateProps, mapDispatchToProps)(Form.create({
             <Col >
               <FormItem label="等级认定" {...formLayout}>
                 {getFieldDecorator('riskResult', {
-                  rules: [{ required: true, message: '请输入等级认定！' }]
                 })(
                   <Input style={{ width: 200 }} placeholder="等级认定" />
                 )}
@@ -235,6 +233,9 @@ class user extends React.Component {
         width: '200px',
         dataIndex: 'handle',
         render: (text, record) => (
+          record.userId === '66d81e5a-f4e7-457c-8929-23daea8bcf12'?
+          <div></div>
+          :
           <div>
             <Button onClick={this.update.bind(this, record)} >修改</Button>
             <Popconfirm title="确认删除该用户吗" onConfirm={this.delete.bind(this, record)}>
